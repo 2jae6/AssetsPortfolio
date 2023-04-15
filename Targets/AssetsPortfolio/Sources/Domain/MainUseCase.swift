@@ -6,27 +6,38 @@
 //  Copyright © 2023 tuist.io. All rights reserved.
 //
 
+import CoreData
 import Foundation
 
 protocol MainUseCase {
-  func requestAssetsData()
+  func addAssetsData()
+  func fetchAssetData()
+  func deleteAssetData()
+  func getAssetsData(container: NSPersistentContainer)
 }
 
 
 class DefaultMainUseCase: MainUseCase {
+  private let repository = DefaultMainRepository()
 
 
+  func addAssetsData() {
+    
+  }
 
+  func fetchAssetData() {
 
-  // repository
+  }
 
+  func deleteAssetData() {
 
+  }
+
+  func getAssetsData(container: NSPersistentContainer) {
+    repository.getAssetsData(container: container)
+  }
 }
 
 extension DefaultMainUseCase {
-  func requestAssetsData() {
-    // TODO: UseCase 에서 데이터 가져오기
 
-
-  }
 }

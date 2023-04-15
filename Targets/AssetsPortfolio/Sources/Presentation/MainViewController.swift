@@ -12,14 +12,13 @@ import RxSwift
 import RxCocoa
 import CoreData
 
-
 final class MainViewController: UIViewController {
 
+
   // MARK: Properties
-
+  private let viewModel = MainViewModel()
   private let disposeBag = DisposeBag()
-  var container: NSPersistentContainer!
-
+ 
 
   // MARK: UI
 
@@ -37,18 +36,22 @@ final class MainViewController: UIViewController {
     return label
   }()
 
-  private let assetsList: UIView = {
+  private let assetsImsiView: UIView = {
     let view = UIView()
     view.backgroundColor = .blue
     return view
+  }()
+
+  private let assetsCollectionView: UITableView = {
+    let collectionView = UITableView()
+    collectionView.backgroundColor = .brown
+    return collectionView
   }()
 
 
   // MARK: Initialize
 
   init() {
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    self.container = appDelegate.persistentContainer
     super.init(nibName: nil, bundle: nil)
     view.backgroundColor = .white
   }
@@ -61,42 +64,8 @@ final class MainViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     drawView()
+    bindView()
 
-
-
-    let assetsData = NSEntityDescription.entity(forEntityName: "Assets", in: self.container.viewContext)
-
-    if let assetsData = assetsData {
-        let data = NSManagedObject(entity: assetsData, insertInto: self.container.viewContext)
-      data.setValue("주식", forKey: "type")
-      data.setValue(15000000, forKey: "value")
-      data.setValue("삼성전자", forKey: "name")
-      data.setValue("10만원 가즈아", forKey: "note")
-    }
-
-
-
-
-    // Save
-
-    do {
-      try self.container.viewContext.save()
-    } catch {
-      print(error.localizedDescription)
-    }
-
-
-    do {
-      let contact = try self.container.viewContext.fetch(Assets.fetchRequest()) as! [Assets]
-      contact.forEach {
-        print($0.type)
-        print($0.value)
-        print($0.name)
-        print($0.note)
-      }
-    } catch {
-      print(error.localizedDescription)
-    }
   }
 }
 
@@ -107,19 +76,28 @@ extension MainViewController {
   private func drawView() {
     addView()
     setConstraints()
+    viewModel.getAssetsData()
   }
 
   private func addView() {
     [
       assetAddButton,
-      mainSumLabel
+      mainSumLabel,
+      assetsImsiView,
+      assetsCollectionView
     ].forEach { view.addSubview($0) }
   }
 
   private func setConstraints() {
-
-    mainSumLabel.translatesAutoresizingMaskIntoConstraints = false
     assetAddButton.translatesAutoresizingMaskIntoConstraints = false
+    mainSumLabel.translatesAutoresizingMaskIntoConstraints = false
+    assetsImsiView.translatesAutoresizingMaskIntoConstraints = false
+    assetsCollectionView.translatesAutoresizingMaskIntoConstraints = false
+
+    NSLayoutConstraint.activate([
+      assetAddButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
+      assetAddButton.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -50)
+    ])
 
     NSLayoutConstraint.activate([
       mainSumLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
@@ -127,9 +105,19 @@ extension MainViewController {
     ])
 
     NSLayoutConstraint.activate([
-      assetAddButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
-      assetAddButton.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -50)
+      assetsImsiView.topAnchor.constraint(equalTo: mainSumLabel.bottomAnchor, constant: 20),
+      assetsImsiView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: 16),
+      assetsImsiView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -16),
+      assetsImsiView.heightAnchor.constraint(equalToConstant: 150)
     ])
+
+    NSLayoutConstraint.activate([
+      assetsCollectionView.topAnchor.constraint(equalTo: assetsImsiView.bottomAnchor, constant: 20),
+      assetsCollectionView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: 16),
+      assetsCollectionView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -16),
+      assetsCollectionView.heightAnchor.constraint(equalToConstant: 150)
+    ])
+
   }
 }
 
@@ -140,11 +128,10 @@ extension MainViewController {
   private func bindView() {
     assetAddButton.rx.tap
       .subscribe(with: self, onNext: { owner, _ in
-        // TODO: 자산 추가 다이얼을 띄우기
-
-
+        let addAssetView = AssetAddViewController()
+        owner.modalPresentationStyle = .overFullScreen
+        owner.present(addAssetView, animated: true)
       })
       .disposed(by: disposeBag)
-
   }
 }
