@@ -7,18 +7,26 @@
 //
 
 import UIKit
+import CoreData
+import Combine
 
 import RxSwift
 import RxCocoa
-import CoreData
+
+enum Section: CaseIterable {
+  case main
+}
 
 final class MainViewController: UIViewController {
 
 
   // MARK: Properties
+  
   private let viewModel = MainViewModel()
   private let disposeBag = DisposeBag()
- 
+  private var storeBag = Set<AnyCancellable>()
+
+
 
   // MARK: UI
 
@@ -42,11 +50,9 @@ final class MainViewController: UIViewController {
     return view
   }()
 
-  private let assetsCollectionView: UITableView = {
-    let collectionView = UITableView()
-    collectionView.backgroundColor = .brown
-    return collectionView
-  }()
+  private lazy var assetsCollectionView = UICollectionView(frame: .zero, collectionViewLayout: createLayout())
+
+  var dataSource: UICollectionViewDiffableDataSource<Section, Assets>!
 
 
   // MARK: Initialize
@@ -65,7 +71,11 @@ final class MainViewController: UIViewController {
     super.viewDidLoad()
     drawView()
     bindView()
+    viewModel.addAssetData()
 
+    setupDataSource()
+    viewModel.getAssetsData()
+//    assetsCollectionView.collectionViewLayout = createLayout()
   }
 }
 
@@ -76,7 +86,6 @@ extension MainViewController {
   private func drawView() {
     addView()
     setConstraints()
-    viewModel.getAssetsData()
   }
 
   private func addView() {
@@ -117,7 +126,47 @@ extension MainViewController {
       assetsCollectionView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -16),
       assetsCollectionView.heightAnchor.constraint(equalToConstant: 150)
     ])
+  }
 
+  func createLayout() -> UICollectionViewLayout {
+      let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                           heightDimension: .fractionalHeight(1.0))
+      let item = NSCollectionLayoutItem(layoutSize: itemSize)
+
+      let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                            heightDimension: .absolute(44))
+      let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize,
+                                                       subitems: [item])
+
+      let section = NSCollectionLayoutSection(group: group)
+
+      let layout = UICollectionViewCompositionalLayout(section: section)
+      return layout
+  }
+
+  func setupDataSource() {
+    assetsCollectionView.register(AssetsCollectionViewCell.self, forCellWithReuseIdentifier: "cell")
+
+    dataSource = UICollectionViewDiffableDataSource<Section, Assets>(
+      collectionView: self.assetsCollectionView,
+      cellProvider: { collectionView, indexPath, element in
+        guard let cell = collectionView.dequeueReusableCell(
+          withReuseIdentifier: "cell",
+          for: indexPath
+        ) as? AssetsCollectionViewCell else { preconditionFailure() }
+
+        cell.configureCell(type: element.type!, name: element.name!)
+
+        return cell
+      }
+    )
+  }
+
+  func performQuery(item: [Assets]) {
+      var snapshot = NSDiffableDataSourceSnapshot<Section, Assets>()
+      snapshot.appendSections([.main])
+      snapshot.appendItems(item)
+      dataSource.apply(snapshot, animatingDifferences: true)
   }
 }
 
@@ -133,5 +182,11 @@ extension MainViewController {
         owner.present(addAssetView, animated: true)
       })
       .disposed(by: disposeBag)
+
+    viewModel.assetsData
+      .sink(receiveValue: { [weak self] in
+        self?.performQuery(item: $0)
+      })
+      .store(in: &storeBag)
   }
 }

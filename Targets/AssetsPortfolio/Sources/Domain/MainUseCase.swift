@@ -13,16 +13,17 @@ protocol MainUseCase {
   func addAssetsData()
   func fetchAssetData()
   func deleteAssetData()
-  func getAssetsData(container: NSPersistentContainer)
+  func getAssetsData() -> [Assets]
 }
 
 
-class DefaultMainUseCase: MainUseCase {
+final class DefaultMainUseCase: MainUseCase {
   private let repository = DefaultMainRepository()
+}
 
-
+extension DefaultMainUseCase {
   func addAssetsData() {
-    
+
   }
 
   func fetchAssetData() {
@@ -33,11 +34,7 @@ class DefaultMainUseCase: MainUseCase {
 
   }
 
-  func getAssetsData(container: NSPersistentContainer) {
-    repository.getAssetsData(container: container)
+  func getAssetsData() -> [Assets] {
+    repository.getAssetsData()
   }
-}
-
-extension DefaultMainUseCase {
-
 }

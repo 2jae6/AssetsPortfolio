@@ -7,20 +7,24 @@
 //
 
 import CoreData
-import Foundation
+import UIKit
 
 final class DefaultMainRepository: MainRepository {
-  func getAssetsData(container: NSPersistentContainer) {
+
+
+  // MARK: Properties
+
+  let container: NSPersistentContainer = (UIApplication.shared.delegate as! AppDelegate).persistentContainer
+}
+
+extension DefaultMainRepository {
+  func getAssetsData() -> [Assets] {
+    var contact = [Assets]()
     do {
-      let contact = try container.viewContext.fetch(Assets.fetchRequest()) as! [Assets]
-      contact.forEach {
-        print($0.type)
-        print($0.value)
-        print($0.name)
-        print($0.note)
-      }
+      contact = try container.viewContext.fetch(Assets.fetchRequest()) as! [Assets]
     } catch {
       print(error.localizedDescription)
     }
+    return contact
   }
 }
