@@ -27,7 +27,6 @@ final class MainViewController: UIViewController {
   private var storeBag = Set<AnyCancellable>()
 
 
-
   // MARK: UI
 
   private let assetAddButton: UIButton = {
@@ -50,7 +49,10 @@ final class MainViewController: UIViewController {
     return view
   }()
 
-  private lazy var assetsCollectionView = UICollectionView(frame: .zero, collectionViewLayout: createLayout())
+  private lazy var assetsCollectionView = UICollectionView(
+    frame: .zero,
+    collectionViewLayout: createLayout()
+  )
 
   var dataSource: UICollectionViewDiffableDataSource<Section, Assets>!
 
@@ -75,7 +77,6 @@ final class MainViewController: UIViewController {
 
     setupDataSource()
     viewModel.getAssetsData()
-//    assetsCollectionView.collectionViewLayout = createLayout()
   }
 }
 
@@ -129,19 +130,21 @@ extension MainViewController {
   }
 
   func createLayout() -> UICollectionViewLayout {
-      let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
-                                           heightDimension: .fractionalHeight(1.0))
-      let item = NSCollectionLayoutItem(layoutSize: itemSize)
+    let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                          heightDimension: .fractionalHeight(1.0))
+    let item = NSCollectionLayoutItem(layoutSize: itemSize)
 
-      let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
-                                            heightDimension: .absolute(44))
-      let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize,
-                                                       subitems: [item])
+    let groupSize = NSCollectionLayoutSize(
+      widthDimension: .fractionalWidth(1.0),
+      heightDimension: .absolute(44)
+    )
+    let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize,
+                                                   subitems: [item])
 
-      let section = NSCollectionLayoutSection(group: group)
+    let section = NSCollectionLayoutSection(group: group)
 
-      let layout = UICollectionViewCompositionalLayout(section: section)
-      return layout
+    let layout = UICollectionViewCompositionalLayout(section: section)
+    return layout
   }
 
   func setupDataSource() {
@@ -155,7 +158,7 @@ extension MainViewController {
           for: indexPath
         ) as? AssetsCollectionViewCell else { preconditionFailure() }
 
-        cell.configureCell(type: element.type!, name: element.name!)
+        cell.configureCell(type: element.type!, name: element.name!, value: CGFloat(element.value), note: element.note!)
 
         return cell
       }
@@ -178,7 +181,7 @@ extension MainViewController {
     assetAddButton.rx.tap
       .subscribe(with: self, onNext: { owner, _ in
         let addAssetView = AssetAddViewController()
-        owner.modalPresentationStyle = .overFullScreen
+        addAssetView.modalPresentationStyle = .overFullScreen
         owner.present(addAssetView, animated: true)
       })
       .disposed(by: disposeBag)
