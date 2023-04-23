@@ -40,6 +40,54 @@ final class AssetAddViewController: UIViewController {
     return button
   }()
 
+  private let typeTitleLabel: UILabel = {
+    let label = UILabel()
+    label.text = "구분"
+    label.backgroundColor = .blue
+    return label
+  }()
+  private let typeTextField: UITextField = {
+    let textfield = UITextField()
+    textfield.backgroundColor = .black
+    return textfield
+  }()
+
+  private let nameTitleLabel: UILabel = {
+    let label = UILabel()
+    label.text = "자산명"
+    label.backgroundColor = .blue
+    return label
+  }()
+  private let nameTextField: UITextField = {
+    let textfield = UITextField()
+    textfield.backgroundColor = .black
+    return textfield
+  }()
+
+  private let valueTitleLabel: UILabel = {
+    let label = UILabel()
+    label.text = "가격"
+    label.backgroundColor = .blue
+    return label
+  }()
+  private let valueTextField: UITextField = {
+    let textfield = UITextField()
+    textfield.backgroundColor = .black
+    return textfield
+  }()
+
+  private let noteTitleLabel: UILabel = {
+    let label = UILabel()
+    label.text = "비고"
+    label.backgroundColor = .blue
+    return label
+  }()
+  private let noteTextField: UITextField = {
+    let textfield = UITextField()
+    textfield.backgroundColor = .black
+    return textfield
+  }()
+
 
   // MARK: View Life Cycle
 
@@ -59,7 +107,15 @@ extension AssetAddViewController {
     [
       backView,
       closeButton,
-      addButton
+      addButton,
+      typeTitleLabel,
+      typeTextField,
+      nameTitleLabel,
+      nameTextField,
+      valueTitleLabel,
+      valueTextField,
+      noteTitleLabel,
+      noteTextField
     ].forEach { view.addSubview($0) }
   }
 
@@ -89,6 +145,56 @@ extension AssetAddViewController {
       addButton.rightAnchor.constraint(equalTo: backView.rightAnchor, constant: -16),
       addButton.bottomAnchor.constraint(equalTo: backView.bottomAnchor, constant: -16)
     ])
+
+    typeTitleLabel.translatesAutoresizingMaskIntoConstraints = false
+    NSLayoutConstraint.activate([
+      typeTitleLabel.leftAnchor.constraint(equalTo: backView.leftAnchor, constant: 16),
+      typeTitleLabel.topAnchor.constraint(equalTo: closeButton.bottomAnchor, constant: 20)
+    ])
+
+    nameTitleLabel.translatesAutoresizingMaskIntoConstraints = false
+    NSLayoutConstraint.activate([
+      nameTitleLabel.leftAnchor.constraint(equalTo: backView.leftAnchor, constant: 16),
+      nameTitleLabel.topAnchor.constraint(equalTo: typeTitleLabel.bottomAnchor, constant: 20)
+    ])
+
+    valueTitleLabel.translatesAutoresizingMaskIntoConstraints = false
+    NSLayoutConstraint.activate([
+      valueTitleLabel.leftAnchor.constraint(equalTo: backView.leftAnchor, constant: 16),
+      valueTitleLabel.topAnchor.constraint(equalTo: nameTitleLabel.bottomAnchor, constant: 20)
+    ])
+
+    noteTitleLabel.translatesAutoresizingMaskIntoConstraints = false
+    NSLayoutConstraint.activate([
+      noteTitleLabel.leftAnchor.constraint(equalTo: backView.leftAnchor, constant: 16),
+      noteTitleLabel.topAnchor.constraint(equalTo: valueTitleLabel.bottomAnchor, constant: 20)
+    ])
+
+    typeTextField.translatesAutoresizingMaskIntoConstraints = false
+    NSLayoutConstraint.activate([
+      typeTextField.centerYAnchor.constraint(equalTo: typeTitleLabel.centerYAnchor),
+      typeTextField.rightAnchor.constraint(equalTo: backView.rightAnchor, constant: -16),
+      typeTextField.leftAnchor.constraint(equalTo: typeTitleLabel.rightAnchor, constant: 10)
+    ])
+    nameTextField.translatesAutoresizingMaskIntoConstraints = false
+    NSLayoutConstraint.activate([
+      nameTextField.centerYAnchor.constraint(equalTo: nameTitleLabel.centerYAnchor),
+      nameTextField.leftAnchor.constraint(equalTo: nameTitleLabel.rightAnchor, constant: 10),
+      nameTextField.rightAnchor.constraint(equalTo: backView.rightAnchor, constant: -16)
+    ])
+    valueTextField.translatesAutoresizingMaskIntoConstraints = false
+    NSLayoutConstraint.activate([
+      valueTextField.centerYAnchor.constraint(equalTo: valueTitleLabel.centerYAnchor),
+      valueTextField.leftAnchor.constraint(equalTo: valueTitleLabel.rightAnchor, constant: 10),
+      valueTextField.rightAnchor.constraint(equalTo: backView.rightAnchor, constant: -16)
+    ])
+    noteTextField.translatesAutoresizingMaskIntoConstraints = false
+    NSLayoutConstraint.activate([
+      noteTextField.centerYAnchor.constraint(equalTo: noteTitleLabel.centerYAnchor),
+      noteTextField.leftAnchor.constraint(equalTo: noteTitleLabel.rightAnchor, constant: 10),
+      noteTextField.rightAnchor.constraint(equalTo: backView.rightAnchor, constant: -16)
+    ])
+
   }
 }
 
