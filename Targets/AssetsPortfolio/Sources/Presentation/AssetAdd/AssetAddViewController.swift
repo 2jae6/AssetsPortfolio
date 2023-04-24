@@ -18,6 +18,7 @@ final class AssetAddViewController: UIViewController {
   // MARK: Properties
 
   private let disposeBag = DisposeBag()
+  private let viewModel = AssetAddViewModel()
 
 
   // MARK: UI
@@ -123,7 +124,7 @@ extension AssetAddViewController {
     backView.translatesAutoresizingMaskIntoConstraints = false
 
     NSLayoutConstraint.activate([
-      backView.heightAnchor.constraint(equalToConstant: 250),
+      backView.heightAnchor.constraint(equalToConstant: 300),
       backView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: 16),
       backView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -16),
       backView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -208,7 +209,8 @@ extension AssetAddViewController {
 
     addButton.rx.tap.asDriver()
       .drive(onNext: { [weak self] in
-        self?.dismiss(animated: true)
+        self?.viewModel.saveAssetData()
+//        self?.dismiss(animated: true)
       })
       .disposed(by: disposeBag)
   }

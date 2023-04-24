@@ -27,4 +27,8 @@ extension DefaultMainRepository {
     }
     return contact
   }
+
+  func saveAssetData() {
+
+  }
 }
