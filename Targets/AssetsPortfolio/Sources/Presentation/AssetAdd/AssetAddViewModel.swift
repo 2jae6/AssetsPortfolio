@@ -17,7 +17,17 @@ final class AssetAddViewModel: AssetAddViewModelProtocol {
 }
 
 extension AssetAddViewModel {
-  func saveAssetData() {
-    assetAddUseCase.saveAssetData()
+  func saveAssetData(
+    typeValue: String,
+    priceValue: CGFloat,
+    nameValue: String,
+    noteValue: String
+  ) {
+    assetAddUseCase.saveAssetData(
+      typeValue: typeValue,
+      priceValue: priceValue,
+      nameValue: nameValue,
+      noteValue: noteValue
+    )
   }
 }

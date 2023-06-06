@@ -12,5 +12,5 @@ let localHelper = LocalHelper(name: "MyPlugin")
 let project = Project.app(
   name: "AssetsPortfolio",
   platform: .iOS,
-  additionalTargets: []
+  dependencies: [.package(product: "CombineCocoa")]
 )

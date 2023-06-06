@@ -7,39 +7,43 @@ import ProjectDescription
 
 extension Project {
     /// Helper function to create the Project for this ExampleApp
-    public static func app(name: String, platform: Platform, additionalTargets: [String]) -> Project {
+    public static func app(name: String,
+                           platform: Platform,
+                           dependencies: [TargetDependency]
+    ) -> Project {
         var targets = makeAppTargets(name: name,
                                      platform: platform,
-                                     dependencies: additionalTargets.map { TargetDependency.target(name: $0) })
-        targets += additionalTargets.flatMap({ makeFrameworkTargets(name: $0, platform: platform) })
-        return Project(name: name,
-                       organizationName: "tuist.io",
-                       targets: targets)
+                                     dependencies: dependencies
+        )
+      return Project(name: name,
+                     organizationName: "tuist.io",
+                     packages: [
+                      .remote(url: "https://github.com/CombineCommunity/CombineCocoa.git",
+                              requirement: .exact("0.4.1"))
+                     ],
+                     targets: targets
+      )
     }
 
     // MARK: - Private
 
     /// Helper function to create a framework target and an associated unit test target
     private static func makeFrameworkTargets(name: String, platform: Platform) -> [Target] {
-        let sources = Target(name: name,
-                platform: platform,
-                product: .framework,
-                bundleId: "io.tuist.\(name)",
-                infoPlist: .default,
-                sources: ["Targets/\(name)/Sources/**"],
-                resources: [],
-                dependencies: [])
-//        let tests = Target(name: "\(name)Tests",
-//                platform: platform,
-//                product: .unitTests,
-//                bundleId: "io.tuist.\(name)Tests",
-//                infoPlist: .default,
-//                sources: ["Targets/\(name)/Tests/**"],
-//                resources: [],
-//                dependencies: [.target(name: name)])
+      let sources = Target(name: name,
+                           platform: platform,
+                           product: .framework,
+                           bundleId: "io.tuist.\(name)",
+                           infoPlist: .default,
+                           sources: ["Targets/\(name)/Sources/**.swift"],
+                           resources: [],
+                           dependencies: [
+                            .package(product: "https://github.com/CombineCommunity/CombineCocoa.git")
+                           ], coreDataModels: [
+                            .init(Path.relativeToRoot("Targets/AssetsPortfolio/Resources/AssetsCoreData.xcdatamodeld"))
+                           ]
+      )
         return [
           sources
-//          , tests
         ]
     }
 

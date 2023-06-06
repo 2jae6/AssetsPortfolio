@@ -8,16 +8,15 @@
 
 import UIKit
 
-import RxSwift
-import RxCocoa
-import RxRelay
+import Combine
+import CombineCocoa
 
 final class AssetAddViewController: UIViewController {
 
 
   // MARK: Properties
 
-  private let disposeBag = DisposeBag()
+  private var cancelBag = Set<AnyCancellable>()
   private let viewModel = AssetAddViewModel()
 
 
@@ -49,7 +48,7 @@ final class AssetAddViewController: UIViewController {
   }()
   private let typeTextField: UITextField = {
     let textfield = UITextField()
-    textfield.backgroundColor = .black
+    textfield.backgroundColor = .white
     return textfield
   }()
 
@@ -61,7 +60,7 @@ final class AssetAddViewController: UIViewController {
   }()
   private let nameTextField: UITextField = {
     let textfield = UITextField()
-    textfield.backgroundColor = .black
+    textfield.backgroundColor = .white
     return textfield
   }()
 
@@ -73,7 +72,7 @@ final class AssetAddViewController: UIViewController {
   }()
   private let valueTextField: UITextField = {
     let textfield = UITextField()
-    textfield.backgroundColor = .black
+    textfield.backgroundColor = .white
     return textfield
   }()
 
@@ -85,9 +84,19 @@ final class AssetAddViewController: UIViewController {
   }()
   private let noteTextField: UITextField = {
     let textfield = UITextField()
-    textfield.backgroundColor = .black
+    textfield.backgroundColor = .white
     return textfield
   }()
+
+
+  // MARK: Initialize
+
+  init() {
+    super.init(nibName: nil, bundle: nil)
+    view.backgroundColor = .clear
+  }
+
+  required init?(coder: NSCoder) { fatalError() }
 
 
   // MARK: View Life Cycle
@@ -201,17 +210,23 @@ extension AssetAddViewController {
 
 extension AssetAddViewController {
   private func bindView() {
-    closeButton.rx.tap.asDriver()
-      .drive(onNext: { [weak self] in
+    closeButton.tapPublisher
+      .sink(receiveValue: { [weak self] in
         self?.dismiss(animated: true)
       })
-      .disposed(by: disposeBag)
+      .store(in: &cancelBag)
 
-    addButton.rx.tap.asDriver()
-      .drive(onNext: { [weak self] in
-        self?.viewModel.saveAssetData()
-//        self?.dismiss(animated: true)
+    addButton.tapPublisher
+      .sink(receiveValue: { [weak self] in
+        guard let self = self else { return }
+        self.viewModel.saveAssetData(
+          typeValue: self.typeTextField.text ?? "없음",
+          priceValue: CGFloat(Int(self.valueTextField.text ?? "0")!),
+          nameValue: self.nameTextField.text ?? "없음",
+          noteValue: self.noteTextField.text ?? "없음"
+        )
+        //        self?.dismiss(animated: true)
       })
-      .disposed(by: disposeBag)
+      .store(in: &cancelBag)
   }
 }

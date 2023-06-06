@@ -9,9 +9,7 @@
 import UIKit
 import CoreData
 import Combine
-
-import RxSwift
-import RxCocoa
+import CombineCocoa
 
 enum Section: CaseIterable {
   case main
@@ -23,8 +21,7 @@ final class MainViewController: UIViewController {
   // MARK: Properties
   
   private let viewModel = MainViewModel()
-  private let disposeBag = DisposeBag()
-  private var storeBag = Set<AnyCancellable>()
+  private var cancelBag = Set<AnyCancellable>()
 
 
   // MARK: UI
@@ -76,6 +73,12 @@ final class MainViewController: UIViewController {
     viewModel.addAssetData()
 
     setupDataSource()
+
+  }
+
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+    print("ㅎㅇ")
     viewModel.getAssetsData()
   }
 }
@@ -178,18 +181,18 @@ extension MainViewController {
 
 extension MainViewController {
   private func bindView() {
-    assetAddButton.rx.tap
-      .subscribe(with: self, onNext: { owner, _ in
+    assetAddButton.tapPublisher
+      .sink(receiveValue: { [weak self] in
         let addAssetView = AssetAddViewController()
-        addAssetView.modalPresentationStyle = .overFullScreen
-        owner.present(addAssetView, animated: true)
+        addAssetView.modalPresentationStyle = .fullScreen
+        self?.present(addAssetView, animated: true)
       })
-      .disposed(by: disposeBag)
+      .store(in: &cancelBag)
 
     viewModel.assetsData
       .sink(receiveValue: { [weak self] in
         self?.performQuery(item: $0)
       })
-      .store(in: &storeBag)
+      .store(in: &cancelBag)
   }
 }

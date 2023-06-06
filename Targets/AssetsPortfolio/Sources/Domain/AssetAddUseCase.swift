@@ -18,7 +18,17 @@ class DefaultAssetAddUseCase: AssetAddUseCase {
 }
 
 extension DefaultAssetAddUseCase {
-  func saveAssetData() {
-
+  func saveAssetData(
+    typeValue: String,
+    priceValue: CGFloat,
+    nameValue: String,
+    noteValue: String
+  ) {
+    repository.saveAssetData(
+      typeValue: typeValue,
+      priceValue: priceValue,
+      nameValue: nameValue,
+      noteValue: noteValue
+    )
   }
 }
